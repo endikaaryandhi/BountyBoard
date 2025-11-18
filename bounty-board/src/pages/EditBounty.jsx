@@ -12,6 +12,9 @@ export default function EditBounty() {
   const { role } = useAuth();
   const navigate = useNavigate();
   
+  // Gunakan Env Variable
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
@@ -33,10 +36,11 @@ export default function EditBounty() {
       return;
     }
 
-    axios.get(`http://localhost:3000/api/bounties/${id}`)
+    // Ganti localhost
+    axios.get(`${API_URL}/api/bounties/${id}`)
       .then(res => setFormData(res.data))
       .catch(err => console.error(err));
-  }, [id, role, navigate]);
+  }, [id, role, navigate, API_URL]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -87,15 +91,12 @@ export default function EditBounty() {
 
       const payload = { ...formData, image_url: finalImageUrl };
       
-      await axios.put(`http://localhost:3000/api/bounties/${id}`, payload);
+      // Ganti localhost
+      await axios.put(`${API_URL}/api/bounties/${id}`, payload);
       
       alert('Bounty Updated Successfully!');
-      
-      // --- PERBAIKAN DI SINI ---
-      // Gunakan replace: true agar history 'Edit' digantikan oleh 'Detail'
-      // Sehingga saat di Detail klik Back, user kembali ke halaman sebelum Edit (Home/List)
+      // Replace history agar Back tidak kembali ke Edit
       navigate(`/detail/${id}`, { replace: true });
-      
     } catch (err) {
       alert(err.response?.data?.error || 'Gagal update data.');
     } finally {
@@ -138,7 +139,6 @@ export default function EditBounty() {
           <p className="text-center text-xs text-wood/70 mb-6 uppercase tracking-widest">Update Fugitive Information</p>
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            
             <div className="flex flex-col items-center mb-4">
                 <div className="w-32 h-40 bg-gray-200 border-4 border-wood mb-2 overflow-hidden relative group">
                     {formData.image_url ? (

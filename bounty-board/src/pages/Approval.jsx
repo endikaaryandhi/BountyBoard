@@ -9,20 +9,22 @@ export default function Approval() {
   const [pendingBounties, setPendingBounties] = useState([]);
   const { role } = useAuth();
   const navigate = useNavigate();
+  
+  // Gunakan Env Variable
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Proteksi: Hanya Admin yang boleh masuk
   useEffect(() => {
     if (role !== 'admin') {
-      // Jika bukan admin, tendang ke home
       navigate('/');
     }
     fetchPending();
-  }, [role, navigate]);
+  }, [role, navigate, API_URL]);
 
   const fetchPending = () => {
-    axios.get('http://localhost:3000/api/bounties')
+    // Ganti localhost
+    axios.get(`${API_URL}/api/bounties`)
       .then(res => {
-        // Filter hanya yang statusnya 'pending'
         setPendingBounties(res.data.filter(b => b.status === 'pending'));
       })
       .catch(err => console.error(err));
@@ -31,22 +33,24 @@ export default function Approval() {
   const handleApprove = async (id) => {
     if(!confirm("Approve this bounty for Public List?")) return;
     try {
-      await axios.put(`http://localhost:3000/api/bounties/${id}/status`, { status: 'wanted' });
-      alert("Bounty Approved! Moved to Wanted List.");
-      fetchPending(); // Refresh list
+      // Ganti localhost
+      await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
+      alert("Bounty Approved!");
+      fetchPending(); 
     } catch (err) {
-      alert("Failed to approve.");
+      alert("Failed to approve");
     }
   };
 
   const handleReject = async (id) => {
     if(!confirm("Reject and Delete this request permanently?")) return;
     try {
-      await axios.put(`http://localhost:3000/api/bounties/${id}/status`, { status: 'rejected' });
-      alert("Bounty Rejected and Deleted.");
-      fetchPending(); // Refresh list
+      // Ganti localhost
+      await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'rejected' });
+      alert("Bounty Rejected");
+      fetchPending(); 
     } catch (err) {
-      alert("Failed to reject.");
+      alert("Failed to reject");
     }
   };
 
@@ -67,7 +71,7 @@ export default function Approval() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {pendingBounties.map(bounty => (
               <div key={bounty.id} className="relative group bg-black/20 p-2 rounded-lg border border-white/10">
-                {/* Tombol Aksi */}
+                {/* Overlay Action Buttons */}
                 <div className="absolute -top-4 -right-4 flex flex-col gap-2 z-50">
                    <button 
                      onClick={() => handleApprove(bounty.id)}

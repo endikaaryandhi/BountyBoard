@@ -1,4 +1,4 @@
-import { useState } from 'react'; // Hapus useEffect karena tidak lagi memblokir user
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
@@ -11,27 +11,25 @@ export default function AddBounty() {
   const { role } = useAuth();
   const navigate = useNavigate();
   
+  // Gunakan Env Variable untuk URL Backend
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
-  // State Data Form
   const [formData, setFormData] = useState({
     name: '', alias: '', description: '', crime: '',
     bounty_amount: '', image_url: '', last_seen: '',
-    // Status akan di-override saat submit
+    status: 'wanted'
   });
 
-  // State Cropping
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  // Proteksi Halaman Admin DIHAPUS agar Hunter bisa akses
-
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // 1. Handle Pilih File
   const handleFileChange = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -41,27 +39,22 @@ export default function AddBounty() {
     }
   };
 
-  // 2. Simpan Koordinat Crop
   const onCropComplete = (_, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-  // 3. Proses Crop & Upload ke Supabase
   const processImage = async () => {
     if (!imageSrc) return formData.image_url; 
 
     try {
       setUploading(true);
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-      
       const fileName = `bounty-${Date.now()}.jpeg`;
 
       const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, croppedImageBlob);
-      
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
-      
       return publicUrl;
     } catch (error) {
       alert('Gagal mengupload gambar: ' + error.message);
@@ -71,30 +64,28 @@ export default function AddBounty() {
     }
   };
 
-  // 4. Submit Form Utama
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // A. Proses gambar dulu (Crop & Upload)
       let finalImageUrl = formData.image_url;
       if (imageSrc) {
         finalImageUrl = await processImage();
-        if (!finalImageUrl) return; // Stop jika upload gagal
+        if (!finalImageUrl) return; 
       }
 
-      // B. Tentukan Status berdasarkan Role
+      // Logika Status: Admin langsung tayang, Hunter perlu review
       const status = role === 'admin' ? 'wanted' : 'pending';
 
-      // C. Siapkan Payload (Tanpa admin_code)
       const payload = { 
           ...formData, 
           image_url: finalImageUrl, 
           status: status 
       };
       
-      await axios.post('http://localhost:3000/api/bounties', payload);
+      // Ganti localhost dengan API_URL
+      await axios.post(`${API_URL}/api/bounties`, payload);
       
       if (role === 'admin') {
           alert('New Target Posted Immediately!');
@@ -114,18 +105,12 @@ export default function AddBounty() {
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 font-serif bg-stone-200">
       
-      {/* MODAL CROP */}
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
           <div className="relative w-full max-w-md h-80 bg-gray-800 mb-4 border-4 border-paper">
             <Cropper
-              image={imageSrc}
-              crop={crop}
-              zoom={zoom}
-              aspect={3 / 4} // Format Poster Buronan (Portrait)
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
+              image={imageSrc} crop={crop} zoom={zoom} aspect={3 / 4}
+              onCropChange={setCrop} onCropComplete={onCropComplete} onZoomChange={setZoom}
             />
           </div>
           <div className="flex gap-4">
@@ -155,30 +140,20 @@ export default function AddBounty() {
           </p>
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            
-            {/* INPUT FOTO DENGAN PREVIEW */}
             <div className="flex flex-col items-center mb-4">
                 <div className="w-32 h-40 bg-gray-200 border-4 border-wood mb-2 overflow-hidden relative group">
                     {formData.image_url ? (
                         <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover sepia-[.3]" />
                     ) : (
-                        <div className="flex items-center justify-center h-full text-wood/40 bg-stone-300">
-                            <User size={40} />
-                        </div>
+                        <div className="flex items-center justify-center h-full text-wood/40 bg-stone-300"><User size={40} /></div>
                     )}
-                    
-                    {/* Tombol Kamera Overlay */}
                     <label className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-colors cursor-pointer">
-                        <div className="bg-wood text-paper p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
-                            <Camera size={20} />
-                        </div>
+                        <div className="bg-wood text-paper p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"><Camera size={20} /></div>
                         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </label>
                 </div>
-                <p className="text-[10px] text-wood uppercase font-bold tracking-widest">Target Photo</p>
             </div>
 
-            {/* Form Input */}
              <div className="flex gap-4">
               <div className="flex-1">
                 <label className="text-xs font-bold text-wood uppercase flex items-center gap-1"><User size={12}/> Name</label>
@@ -204,12 +179,6 @@ export default function AddBounty() {
                 <label className="text-xs font-bold text-wood uppercase flex items-center gap-1"><MapPin size={12}/> Last Seen</label>
                 <input required name="last_seen" value={formData.last_seen} onChange={handleChange} className={inputStyle} placeholder="Lokasi Terakhir" />
               </div>
-            </div>
-
-            {/* Input URL Manual (Opsional) */}
-            <div>
-              <label className="text-[10px] font-bold text-wood/60 uppercase">Or Paste Photo URL</label>
-              <input name="image_url" value={formData.image_url} onChange={handleChange} className={`${inputStyle} text-xs`} placeholder="https://..." />
             </div>
 
             <div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
-import { Edit, Trash2 } from 'lucide-react'; // Tambah Icon Baru
+import { Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
 export default function Detail() {
@@ -9,27 +9,27 @@ export default function Detail() {
   const navigate = useNavigate();
   const { role } = useAuth(); 
   const [bounty, setBounty] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL; // Ambil URL Backend
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/bounties/${id}`)
+    axios.get(`${API_URL}/api/bounties/${id}`)
       .then(res => setBounty(res.data))
       .catch(() => alert("Bounty not found"));
   }, [id]);
 
   const updateStatus = (newStatus) => {
-    axios.put(`http://localhost:3000/api/bounties/${id}/status`, { status: newStatus })
+    axios.put(`${API_URL}/api/bounties/${id}/status`, { status: newStatus })
       .then(() => {
         alert(newStatus === 'captured' ? "Target Captured!" : "Target Marked as WANTED again!");
         navigate(newStatus === 'captured' ? '/captured' : '/');
       });
   };
 
-  // FUNGSI HAPUS
   const handleDelete = async () => {
     if(!confirm("WARNING: Are you sure you want to PERMANENTLY DELETE this bounty record?")) return;
     
     try {
-        await axios.delete(`http://localhost:3000/api/bounties/${id}`);
+        await axios.delete(`${API_URL}/api/bounties/${id}`);
         alert("Record Deleted.");
         navigate('/');
     } catch (err) {
@@ -45,7 +45,6 @@ export default function Detail() {
       
       <div className="bg-paper p-6 rounded-lg border-4 border-wood shadow-xl max-w-md mx-auto relative">
         
-        {/* ADMIN ACTIONS (Edit & Delete Buttons) */}
         {role === 'admin' && (
             <div className="absolute top-4 right-4 flex gap-2 z-10">
                 <button 
@@ -93,7 +92,6 @@ export default function Detail() {
           </div>
         </div>
         
-        {/* Capture Buttons Logic */}
         {bounty.status === 'wanted' && (
           <button 
             onClick={() => updateStatus('captured')}
@@ -117,7 +115,6 @@ export default function Detail() {
              CASE CLOSED
            </div>
         )}
-
       </div>
     </div>
   );

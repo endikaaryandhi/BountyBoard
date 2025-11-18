@@ -3,13 +3,14 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BountyCard from '../components/BountyCard';
 
-export default function Home() {
+export default function Captured() {
   const [bounties, setBounties] = useState([]);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL; // Ambil URL Backend
 
   useEffect(() => {
-    // Ganti URL dengan backend Anda
-    axios.get('http://localhost:3000/api/bounties') 
+    // Ganti localhost
+    axios.get(`${API_URL}/api/bounties`) 
       .then(res => setBounties(res.data.filter(b => b.status === 'captured')))
       .catch(err => console.error(err));
   }, []);
