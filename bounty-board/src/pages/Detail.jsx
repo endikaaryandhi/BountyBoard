@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
 import { useNotification } from '../context/NotificationContext';
-import { useData } from '../context/DataContext';
 import { Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
@@ -11,9 +10,10 @@ export default function Detail() {
   const navigate = useNavigate();
   const { role } = useAuth(); 
   const { showNotification } = useNotification();
-  const { refreshData } = useData();
   const [bounty, setBounty] = useState(null);
   const API_URL = import.meta.env.VITE_API_URL; 
+  
+  const confidentialImage = "https://placehold.co/400x500/2e2622/F5E6C8?text=CONFIDENTIAL&font=serif";
 
   useEffect(() => {
     axios.get(`${API_URL}/api/bounties/${id}`)
@@ -24,7 +24,6 @@ export default function Detail() {
   const updateStatus = (newStatus) => {
     axios.put(`${API_URL}/api/bounties/${id}/status`, { status: newStatus })
       .then(() => {
-        refreshData();
         if (newStatus === 'captured') {
             showNotification('Target Captured! Good work.', 'success');
             navigate('/captured');
@@ -40,7 +39,6 @@ export default function Detail() {
     
     try {
         await axios.delete(`${API_URL}/api/bounties/${id}`);
-        refreshData();
         showNotification('Record Deleted.', 'error');
         navigate('/');
     } catch (err) {
@@ -64,7 +62,10 @@ export default function Detail() {
               </div>
           )}
 
-          <img src={bounty.image_url} className={`w-full h-80 object-cover rounded border-2 border-wood mb-4 ${bounty.status === 'captured' ? 'grayscale' : ''}`}/>
+          <img 
+            src={bounty.image_url || confidentialImage} 
+            className={`w-full h-96 object-cover rounded border-2 border-wood mb-4 ${bounty.status === 'captured' ? 'grayscale' : ''} sepia-[.3]`}
+          />
           
           <h1 className="text-3xl font-black text-wood text-center uppercase tracking-widest border-b-4 border-wood pb-2 mb-4">{bounty.name}</h1>
           
