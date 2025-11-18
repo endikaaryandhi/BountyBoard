@@ -3,17 +3,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import BountyCard from '../components/BountyCard';
 
 export default function Approval() {
   const [pendingBounties, setPendingBounties] = useState([]);
   const { role } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
-  
-  // Gunakan Env Variable
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // Proteksi: Hanya Admin yang boleh masuk
   useEffect(() => {
     if (role !== 'admin') {
       navigate('/');
@@ -22,7 +21,6 @@ export default function Approval() {
   }, [role, navigate, API_URL]);
 
   const fetchPending = () => {
-    // Ganti localhost
     axios.get(`${API_URL}/api/bounties`)
       .then(res => {
         setPendingBounties(res.data.filter(b => b.status === 'pending'));
@@ -33,29 +31,27 @@ export default function Approval() {
   const handleApprove = async (id) => {
     if(!confirm("Approve this bounty for Public List?")) return;
     try {
-      // Ganti localhost
       await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
-      alert("Bounty Approved!");
+      showNotification('Bounty Approved!', 'success');
       fetchPending(); 
     } catch (err) {
-      alert("Failed to approve");
+      showNotification("Failed to approve", 'error');
     }
   };
 
   const handleReject = async (id) => {
     if(!confirm("Reject and Delete this request permanently?")) return;
     try {
-      // Ganti localhost
       await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'rejected' });
-      alert("Bounty Rejected");
+      showNotification('Bounty Rejected', 'info');
       fetchPending(); 
     } catch (err) {
-      alert("Failed to reject");
+      showNotification("Failed to reject", 'error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#2e2622] pb-20 pt-8 px-4">
+    <div className="min-h-screen bg-transparent pb-20 pt-8 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-serif font-bold text-paper text-center mb-2 uppercase tracking-widest border-b-4 border-wood pb-4 inline-block w-full">
           Guild Approval Desk
@@ -71,7 +67,6 @@ export default function Approval() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {pendingBounties.map(bounty => (
               <div key={bounty.id} className="relative group bg-black/20 p-2 rounded-lg border border-white/10">
-                {/* Overlay Action Buttons */}
                 <div className="absolute -top-4 -right-4 flex flex-col gap-2 z-50">
                    <button 
                      onClick={() => handleApprove(bounty.id)}
@@ -89,7 +84,6 @@ export default function Approval() {
                    </button>
                 </div>
 
-                {/* Kartu Buronan (Non-clickable) */}
                 <div className="pointer-events-none opacity-90">
                     <BountyCard bounty={bounty} onClick={() => {}} />
                 </div>

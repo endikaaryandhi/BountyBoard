@@ -9,7 +9,6 @@ export const NotificationProvider = ({ children }) => {
   const showNotification = useCallback((message, type = 'info') => {
     setNotification({ message, type });
     
-    // Hilang otomatis setelah 3 detik
     setTimeout(() => {
       setNotification(null);
     }, 3000);

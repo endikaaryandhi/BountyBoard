@@ -19,9 +19,9 @@ export const AuthProvider = ({ children }) => {
         
       if (data) {
         setRole(data.role);
-        console.log("Role loaded:", data.role); // Debugging
+        console.log("Role loaded:", data.role); 
       } else {
-        setRole('hunter'); // Default jika gagal
+        setRole('hunter'); 
       }
     } catch (err) {
       console.error("Error fetching role:", err);
@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      // 1. Cek Session Awal
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
@@ -39,11 +38,10 @@ export const AuthProvider = ({ children }) => {
       }
       setLoading(false);
 
-      // 2. Listen Perubahan Auth (Login/Logout)
       const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
           setUser(session.user);
-          await fetchRole(session.user.id); // Ambil role setiap login
+          await fetchRole(session.user.id); 
         } else {
           setUser(null);
           setRole(null);

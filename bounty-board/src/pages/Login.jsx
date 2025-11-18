@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // State untuk loading tombol
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth(); // Ambil status user dari context
+  const { user } = useAuth();
 
-  // EFEK OTOMATIS: Jika user sudah login (ada datanya), langsung pindah ke Home
   useEffect(() => {
     if (user) {
       navigate('/');
@@ -23,7 +22,6 @@ export default function Login() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      // Tidak perlu navigate di sini, useEffect di atas yang akan jalan otomatis
     } catch (error) {
       alert(error.message);
       setLoading(false);
@@ -31,7 +29,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#2e2622] bg-[url('https://www.transparenttextures.com/patterns/dark-wood.png')]">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="bg-paper p-8 rounded-sm shadow-2xl border-4 border-wood max-w-md w-full transform rotate-1">
         <h2 className="text-3xl font-serif font-black text-wood text-center mb-6 uppercase tracking-widest border-b-4 border-wood pb-2">
           Hunter Login

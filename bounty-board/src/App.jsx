@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'; 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { NotificationProvider } from './context/NotificationContext'; 
+import { NotificationProvider } from './context/NotificationContext';
 import Navbar from './components/Navbar';
-import SplashScreen from './components/SplashScreen'; 
+import SplashScreen from './components/SplashScreen';
 import Home from './pages/Home';
 import Captured from './pages/Captured';
 import Detail from './pages/Detail';
@@ -13,10 +12,11 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Approval from './pages/Approval';
+import { useState } from 'react';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return null; 
+  if (loading) return null;
   return user ? children : <Navigate to="/login" />;
 };
 
@@ -36,9 +36,13 @@ export default function App() {
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  
+                  {/* HALAMAN PUBLIK */}
                   <Route path="/" element={<Home />} />
+                  <Route path="/captured" element={<Captured />} /> {/* JADI PUBLIK */}
                   <Route path="/detail/:id" element={<Detail />} />
-                  <Route path="/captured" element={<PrivateRoute><Captured /></PrivateRoute>} />
+
+                  {/* HALAMAN PRIVATE */}
                   <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
                   <Route path="/edit/:id" element={<PrivateRoute><EditBounty /></PrivateRoute>} />
                   <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

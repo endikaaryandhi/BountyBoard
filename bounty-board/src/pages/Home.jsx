@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Search, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Search, CheckCircle, XCircle } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 export default function Home() {
   const [bounties, setBounties] = useState([]);
@@ -12,12 +13,10 @@ export default function Home() {
   const [view, setView] = useState('wanted');
   const navigate = useNavigate();
   const { role } = useAuth();
-  
-  // Gunakan Variable API URL
+  const { showNotification } = useNotification();
   const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchData = () => {
-    // Ganti localhost dengan API_URL
     axios.get(`${API_URL}/api/bounties`) 
       .then(res => {
         setBounties(res.data.filter(b => b.status === 'wanted'));
@@ -36,9 +35,10 @@ export default function Home() {
     
     try {
         await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
+        showNotification('Bounty Approved!', 'success');
         fetchData();
     } catch (err) {
-        alert("Error approving");
+        showNotification("Error approving", 'error');
     }
   };
 
@@ -48,9 +48,10 @@ export default function Home() {
 
     try {
         await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'rejected' });
+        showNotification('Bounty Rejected', 'info');
         fetchData();
     } catch (err) {
-        alert("Error rejecting");
+        showNotification("Error rejecting", 'error');
     }
   };
 
@@ -84,15 +85,20 @@ export default function Home() {
           <div className="flex justify-center gap-2 mt-4">
             <button 
               onClick={() => setView('wanted')}
-              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 ${view === 'wanted' ? 'bg-wood text-paper border-wood' : 'bg-transparent text-wood/60 border-wood/30'}`}
+              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 transition-all ${view === 'wanted' ? 'bg-wood text-paper border-wood' : 'bg-black/40 text-white/70 border-transparent hover:bg-black/60'}`}
             >
               Public List
             </button>
             <button 
               onClick={() => setView('pending')}
-              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 ${view === 'pending' ? 'bg-orange-600 text-white border-orange-700' : 'bg-transparent text-wood/60 border-wood/30'}`}
+              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 transition-all flex items-center gap-2 ${view === 'pending' ? 'bg-orange-700 text-white border-orange-900' : 'bg-black/40 text-white/70 border-transparent hover:bg-black/60'}`}
             >
-              Pending Approval ({pendingBounties.length})
+              Pending Approval 
+              {pendingBounties.length > 0 && (
+                <span className="bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                  {pendingBounties.length}
+                </span>
+              )}
             </button>
           </div>
         )}
@@ -105,17 +111,19 @@ export default function Home() {
                <BountyCard bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
                
                {view === 'pending' && role === 'admin' && (
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={(e) => handleApprove(bounty.id, e)} className="bg-green-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform" title="Approve">
-                        <CheckCircle size={32} />
-                    </button>
-                    <button onClick={(e) => handleReject(bounty.id, e)} className="bg-red-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform" title="Reject">
-                        <XCircle size={32} />
-                    </button>
-                 </div>
-               )}
-               {view === 'pending' && role === 'admin' && (
-                 <div className="absolute inset-0 bg-black/40 z-30 pointer-events-none group-hover:bg-black/60 transition-colors rounded-lg"></div>
+                 <>
+                    <div className="absolute inset-0 bg-black/60 z-30 rounded-sm flex items-center justify-center gap-4 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button onClick={(e) => handleApprove(bounty.id, e)} className="bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-green-500 transition-all" title="Approve">
+                            <CheckCircle size={40} />
+                        </button>
+                        <button onClick={(e) => handleReject(bounty.id, e)} className="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-red-500 transition-all" title="Reject">
+                            <XCircle size={40} />
+                        </button>
+                    </div>
+                    <div className="absolute top-2 right-2 z-20 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded shadow uppercase">
+                        Waiting Approval
+                    </div>
+                 </>
                )}
             </div>
           ))}

@@ -4,10 +4,8 @@ export default function SplashScreen({ onFinish }) {
   const [fade, setFade] = useState(false);
 
   useEffect(() => {
-    // Mulai efek fade-out setelah 2.5 detik
     const timer = setTimeout(() => setFade(true), 2500);
     
-    // Hapus splash screen dari DOM setelah animasi selesai (3 detik total)
     const finishTimer = setTimeout(onFinish, 3000);
 
     return () => {

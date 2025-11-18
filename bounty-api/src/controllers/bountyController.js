@@ -35,12 +35,9 @@ export const updateStatus = async (req, res) => {
     res.json(data[0]);
 };
 
-// --- TAMBAHAN BARU UNTUK EDIT & DELETE ---
-
-// Update Data Buronan (Edit Full)
 export const updateBounty = async (req, res) => {
     const { id } = req.params;
-    const updates = req.body; // Data baru dari form edit
+    const updates = req.body; 
 
     const { data, error } = await supabase
         .from('fugitives')
@@ -52,7 +49,6 @@ export const updateBounty = async (req, res) => {
     res.json(data[0]);
 };
 
-// Hapus Buronan (Hard Delete)
 export const deleteBounty = async (req, res) => {
     const { id } = req.params;
     const { error } = await supabase

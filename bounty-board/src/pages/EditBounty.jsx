@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
-import { useNotification } from '../context/NotificationContext'; 
+import { useNotification } from '../context/NotificationContext';
 import { supabase } from '../config/supabase'; 
 import { Save, MapPin, Skull, DollarSign, User, Camera, X, Upload } from 'lucide-react';
 import Cropper from 'react-easy-crop'; 
@@ -13,7 +13,6 @@ export default function EditBounty() {
   const { role } = useAuth();
   const { showNotification } = useNotification();
   const navigate = useNavigate();
-  
   const API_URL = import.meta.env.VITE_API_URL;
 
   const [loading, setLoading] = useState(false);
@@ -105,7 +104,7 @@ export default function EditBounty() {
   const inputStyle = "w-full bg-transparent border-b-2 border-wood/50 focus:border-wood px-2 py-2 outline-none placeholder-wood/40 text-wood font-serif transition-colors";
 
   return (
-    <div className="min-h-screen pb-24 pt-6 px-4 font-serif bg-stone-200">
+    <div className="min-h-screen pb-24 pt-6 px-4 font-serif bg-transparent">
       
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">

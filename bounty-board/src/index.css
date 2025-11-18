@@ -3,35 +3,32 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Georgia', serif; /* Menggunakan font serif agar lebih klasik */
+  font-family: 'Georgia', serif;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* Warna latar belakang dinding gelap */
   background-color: #2e2622; 
   background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url("https://www.transparenttextures.com/patterns/dark-wood.png");
+  background-attachment: fixed; 
+  color: #F5E6C8; 
 }
 
-/* Kustomisasi Scrollbar agar sesuai tema */
 ::-webkit-scrollbar {
   width: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: #2a1d18;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #5D4037;
   border-radius: 5px;
   border: 2px solid #2a1d18;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #795548;
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { useAuth } from '../context/AuthContext';
-import { useNotification } from '../context/NotificationContext'; 
+import { useNotification } from '../context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
@@ -93,7 +93,7 @@ export default function Profile() {
   if (!user) return <div className="text-center text-white pt-20">Please Login</div>;
 
   return (
-    <div className="p-4 pb-20 min-h-screen flex flex-col items-center pt-10">
+    <div className="p-4 pb-20 min-h-screen flex flex-col items-center pt-10 bg-transparent">
       
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
