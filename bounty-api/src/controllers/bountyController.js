@@ -37,7 +37,7 @@ export const updateStatus = async (req, res) => {
 
 export const updateBounty = async (req, res) => {
     const { id } = req.params;
-    const updates = req.body; 
+    const updates = req.body;
 
     const { data, error } = await supabase
         .from('fugitives')
