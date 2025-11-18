@@ -21,36 +21,45 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-stone-200 pb-24">
-      {/* Header Kayu */}
-      <div className="bg-wood text-paper py-6 px-4 shadow-lg sticky top-0 z-40 border-b-4 border-[#3e2b25]">
-        <h1 className="text-3xl font-serif font-black text-center tracking-[0.2em] uppercase drop-shadow-md">
-          Bounty Board
-        </h1>
-        
-        {/* Search Bar */}
-        <div className="mt-4 relative max-w-md mx-auto">
-          <input 
-            type="text"
-            placeholder="Search target or crime..."
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#4a332a] text-paper placeholder-paper/50 border-2 border-paper/20 rounded-full py-2 pl-10 pr-4 outline-none focus:border-paper transition-all"
-          />
-          <Search className="absolute left-3 top-2.5 text-paper/50" size={18} />
+    <div className="min-h-screen bg-transparent pb-12">
+      
+      {/* Area Pencarian: Desain Kertas Terpaku */}
+      <div className="max-w-md mx-auto mt-8 px-4 mb-8 relative z-10">
+        <div className="bg-paper border-2 border-wood/30 shadow-lg p-4 transform -rotate-1 rounded-sm relative">
+          {/* Efek Paku */}
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gray-800 border border-gray-500 shadow"></div>
+          
+          <h2 className="text-center text-wood font-serif font-bold uppercase tracking-widest mb-2 border-b border-wood/20 pb-1">
+            Find Target
+          </h2>
+          
+          <div className="relative">
+            <input 
+              type="text"
+              placeholder="Search name or crime..."
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-stone-100/50 text-wood placeholder-wood/40 border border-wood/20 rounded px-4 py-2 pl-10 outline-none focus:bg-white focus:border-wood transition-all font-serif"
+            />
+            <Search className="absolute left-3 top-2.5 text-wood/50" size={18} />
+          </div>
         </div>
       </div>
 
       {/* Papan Pengumuman (Grid) */}
-      <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-        {filteredBounties.map(bounty => (
-          <BountyCard key={bounty.id} bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
-        ))}
-        
-        {filteredBounties.length === 0 && (
-          <div className="col-span-full text-center py-20 opacity-50">
-            <p className="text-wood font-serif text-xl">No active warrants found.</p>
-          </div>
-        )}
+      <div className="max-w-6xl mx-auto p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredBounties.map(bounty => (
+            <BountyCard key={bounty.id} bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
+          ))}
+          
+          {filteredBounties.length === 0 && (
+            <div className="col-span-full text-center py-20">
+              <p className="text-paper font-serif text-2xl font-bold drop-shadow-md opacity-80">
+                No active warrants found in this area.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
