@@ -9,24 +9,42 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const initAuth = async () => {
       try {
-        // Cek session saat ini
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser(session.user);
-          await fetchRole(session.user.id);
+        // --- TIMEOUT PENGAMAN ---
+        // Jika Supabase tidak merespon dalam 5 detik, kita batalkan loading
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Timeout")), 5000)
+        );
+
+        // Balapan: Mana yang lebih cepat, respon Supabase atau Timer 5 detik?
+        const sessionPromise = supabase.auth.getSession();
+        const { data } = await Promise.race([sessionPromise, timeoutPromise]);
+
+        if (data?.session?.user && mounted) {
+          setUser(data.session.user);
+          await fetchRole(data.session.user.id);
         }
       } catch (error) {
-        console.error("Auth Init Error:", error);
+        console.error("Gagal load session:", error);
+        // Jika error/timeout, kita anggap user logout agar aplikasi tidak macet
+        if (mounted) {
+          setUser(null);
+          setRole(null);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     initAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Listener: Memantau jika user login/logout saat aplikasi berjalan
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      
       if (session?.user) {
         setUser(session.user);
         await fetchRole(session.user.id);
@@ -37,21 +55,18 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchRole = async (userId) => {
     try {
-      const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).single();
-      if (error) {
-        // Jika profil belum ada (misal baru register), default ke hunter
-        console.warn("Profile fetch warning:", error.message);
-        setRole('hunter'); 
-      } else if (data) {
-        setRole(data.role);
-      }
+      const { data } = await supabase.from('profiles').select('role').eq('id', userId).single();
+      if (data) setRole(data.role);
     } catch (err) {
-      console.error("Fetch Role Error:", err);
+      console.error("Gagal ambil role:", err);
     }
   };
 
@@ -61,12 +76,13 @@ export const AuthProvider = ({ children }) => {
     setRole(null);
   };
 
-  // TAMPILAN SAAT LOADING AGAR TIDAK BLANK
+  // Tampilan Loading (Maksimal muncul 5 detik sekarang)
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#2e2622] text-white font-serif">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#F5E6C8] mb-4"></div>
-        <h2 className="text-xl tracking-widest">INITIALIZING GUILD DATABASE...</h2>
+        <h2 className="text-xl tracking-widest animate-pulse">INITIALIZING GUILD DATABASE...</h2>
+        <p className="text-xs mt-4 text-gray-400">Connecting to satellite...</p>
       </div>
     );
   }

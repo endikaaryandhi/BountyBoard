@@ -77,6 +77,12 @@ export default function Profile() {
     setLoading(false);
   };
 
+  // Fungsi Logout yang diperbaiki
+  const handleLogout = async () => {
+    await signOut(); // Tunggu sampai data user dihapus dari state
+    navigate('/login'); // Baru pindah halaman
+  };
+
   if (!user) return <div className="text-center text-white pt-20">Please Login</div>;
 
   return (
@@ -161,7 +167,8 @@ export default function Profile() {
         </div>
 
         <div className="border-t-2 border-wood/20 pt-4">
-          <button onClick={() => { signOut(); navigate('/login'); }} className="flex items-center justify-center gap-2 w-full text-red-800 font-bold hover:bg-red-100 p-2 rounded transition-colors">
+          {/* PERBAIKAN: Menggunakan handleLogout agar proses async selesai dulu */}
+          <button onClick={handleLogout} className="flex items-center justify-center gap-2 w-full text-red-800 font-bold hover:bg-red-100 p-2 rounded transition-colors">
             <LogOut size={18} /> Resign (Logout)
           </button>
         </div>

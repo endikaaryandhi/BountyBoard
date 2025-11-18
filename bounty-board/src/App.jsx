@@ -8,6 +8,7 @@ import AddBounty from './pages/AddBounty';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Approval from './pages/Approval'; // IMPORT INI
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -20,7 +21,6 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <div className="flex flex-col min-h-screen">
-          {/* Navbar akan otomatis hidden di login/register berkat logika di dalam Navbar.jsx */}
           <Navbar />
           <main className="flex-grow">
             <Routes>
@@ -32,6 +32,9 @@ export default function App() {
               <Route path="/detail/:id" element={<PrivateRoute><Detail /></PrivateRoute>} />
               <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+              
+              {/* TAMBAHKAN ROUTE INI */}
+              <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
             </Routes>
           </main>
         </div>
