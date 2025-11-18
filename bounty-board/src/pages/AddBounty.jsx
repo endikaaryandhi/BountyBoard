@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
+import { useNotification } from '../context/NotificationContext'; 
 import { supabase } from '../config/supabase'; 
 import { Save, MapPin, Skull, DollarSign, User, Camera, X, Upload } from 'lucide-react';
 import Cropper from 'react-easy-crop'; 
@@ -9,9 +10,9 @@ import { getCroppedImg } from '../utils/cropImage';
 
 export default function AddBounty() {
   const { role } = useAuth();
+  const { showNotification } = useNotification(); 
   const navigate = useNavigate();
   
-  // Gunakan Env Variable untuk URL Backend
   const API_URL = import.meta.env.VITE_API_URL;
 
   const [loading, setLoading] = useState(false);
@@ -52,12 +53,14 @@ export default function AddBounty() {
       const fileName = `bounty-${Date.now()}.jpeg`;
 
       const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, croppedImageBlob);
+      
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      
       return publicUrl;
     } catch (error) {
-      alert('Gagal mengupload gambar: ' + error.message);
+      showNotification('Gagal mengupload gambar: ' + error.message, 'error');
       return null;
     } finally {
       setUploading(false);
@@ -75,7 +78,7 @@ export default function AddBounty() {
         if (!finalImageUrl) return; 
       }
 
-      // Logika Status: Admin langsung tayang, Hunter perlu review
+      // Hunter = Pending, Admin = Wanted
       const status = role === 'admin' ? 'wanted' : 'pending';
 
       const payload = { 
@@ -84,17 +87,17 @@ export default function AddBounty() {
           status: status 
       };
       
-      // Ganti localhost dengan API_URL
       await axios.post(`${API_URL}/api/bounties`, payload);
       
+      // Notifikasi Berbeda untuk Admin vs Hunter
       if (role === 'admin') {
-          alert('New Target Posted Immediately!');
+          showNotification('New Target Posted Successfully!', 'success');
       } else {
-          alert('Request Submitted! Waiting for Guild Master approval.');
+          showNotification('Request Submitted! Waiting for Guild Master approval.', 'info');
       }
       navigate('/');
     } catch (err) {
-      alert(err.response?.data?.error || 'Gagal posting data.');
+      showNotification(err.response?.data?.error || 'Gagal posting data.', 'error');
     } finally {
       setLoading(false);
     }
@@ -152,6 +155,7 @@ export default function AddBounty() {
                         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </label>
                 </div>
+                <p className="text-[10px] text-wood uppercase font-bold tracking-widest">Target Photo</p>
             </div>
 
              <div className="flex gap-4">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
+import { useNotification } from '../context/NotificationContext'; 
 import { Edit, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
@@ -8,20 +9,26 @@ export default function Detail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuth(); 
+  const { showNotification } = useNotification();
   const [bounty, setBounty] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL; // Ambil URL Backend
+  const API_URL = import.meta.env.VITE_API_URL; 
 
   useEffect(() => {
     axios.get(`${API_URL}/api/bounties/${id}`)
       .then(res => setBounty(res.data))
-      .catch(() => alert("Bounty not found"));
-  }, [id]);
+      .catch(() => showNotification("Bounty not found", "error"));
+  }, [id, API_URL]);
 
   const updateStatus = (newStatus) => {
     axios.put(`${API_URL}/api/bounties/${id}/status`, { status: newStatus })
       .then(() => {
-        alert(newStatus === 'captured' ? "Target Captured!" : "Target Marked as WANTED again!");
-        navigate(newStatus === 'captured' ? '/captured' : '/');
+        if (newStatus === 'captured') {
+            showNotification('Target Captured! Good work, Hunter.', 'success');
+            navigate('/captured');
+        } else {
+            showNotification('Status Revoked! Target is active again.', 'info');
+            navigate('/');
+        }
       });
   };
 
@@ -30,10 +37,10 @@ export default function Detail() {
     
     try {
         await axios.delete(`${API_URL}/api/bounties/${id}`);
-        alert("Record Deleted.");
+        showNotification('Record Deleted.', 'error');
         navigate('/');
     } catch (err) {
-        alert("Failed to delete: " + err.message);
+        showNotification("Failed to delete: " + err.message, 'error');
     }
   };
 

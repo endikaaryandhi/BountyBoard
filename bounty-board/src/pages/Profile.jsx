@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext'; 
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../utils/cropImage';
@@ -8,12 +9,12 @@ import { LogOut, Camera, Save, X } from 'lucide-react';
 
 export default function Profile() {
   const { user, role, signOut } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({ username: '', avatar_url: '' });
   const [isEditing, setIsEditing] = useState(false);
   
-  // State Cropping
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -55,7 +56,7 @@ export default function Profile() {
       await updateProfileData(publicUrl);
       setImageSrc(null);
     } catch (error) {
-      alert('Error uploading avatar: ' + error.message);
+      showNotification('Error uploading avatar: ' + error.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -70,24 +71,22 @@ export default function Profile() {
     }).eq('id', user.id);
 
     if (error) {
-        alert(error.message);
+        showNotification(error.message, 'error');
     } else {
-        // NOTIFIKASI SUKSES
-        alert("Profile updated successfully!"); 
+        showNotification("Hunter Identity Updated Successfully!", 'success');
         setIsEditing(false);
         getProfile();
     }
     setLoading(false);
   };
 
-  // PERBAIKAN LOGOUT
   const handleLogout = async () => {
     try {
-        await signOut(); // Tunggu clear session di Supabase
-        navigate('/login'); // Paksa pindah ke login
+        await signOut(); 
+        navigate('/login'); 
     } catch (error) {
         console.error("Logout error:", error);
-        navigate('/login'); // Tetap pindah walau error
+        navigate('/login'); 
     }
   };
 
@@ -96,7 +95,6 @@ export default function Profile() {
   return (
     <div className="p-4 pb-20 min-h-screen flex flex-col items-center pt-10">
       
-      {/* Modal Cropping */}
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
           <div className="relative w-full max-w-md h-80 bg-gray-800 mb-4 border-4 border-paper">
@@ -115,7 +113,6 @@ export default function Profile() {
         </div>
       )}
 
-      {/* Profile Card */}
       <div className="bg-paper p-6 rounded-lg shadow-2xl border-4 border-wood w-full max-w-sm text-center relative">
         <div className="relative inline-block group">
           <div className="w-32 h-32 bg-wood rounded-full mb-4 overflow-hidden border-4 border-stone-800 mx-auto shadow-inner">
@@ -159,6 +156,10 @@ export default function Profile() {
             <LogOut size={18} /> Resign (Logout)
           </button>
         </div>
+      </div>
+
+      <div className="mt-8 bg-paper/90 p-4 rounded shadow border border-wood/30 max-w-sm w-full text-center">
+         <p className="text-xs text-wood uppercase tracking-widest">BountyBoard v2.0 System</p>
       </div>
     </div>
   );

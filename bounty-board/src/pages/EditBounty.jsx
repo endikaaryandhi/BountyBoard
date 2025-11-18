@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
+import { useNotification } from '../context/NotificationContext'; 
 import { supabase } from '../config/supabase'; 
 import { Save, MapPin, Skull, DollarSign, User, Camera, X, Upload } from 'lucide-react';
 import Cropper from 'react-easy-crop'; 
@@ -10,9 +11,9 @@ import { getCroppedImg } from '../utils/cropImage';
 export default function EditBounty() {
   const { id } = useParams();
   const { role } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
   
-  // Gunakan Env Variable
   const API_URL = import.meta.env.VITE_API_URL;
 
   const [loading, setLoading] = useState(false);
@@ -31,12 +32,11 @@ export default function EditBounty() {
 
   useEffect(() => {
     if (role !== 'admin') {
-      alert('Access Denied');
+      showNotification('Access Denied: Guild Master Only.', 'error');
       navigate('/');
       return;
     }
 
-    // Ganti localhost
     axios.get(`${API_URL}/api/bounties/${id}`)
       .then(res => setFormData(res.data))
       .catch(err => console.error(err));
@@ -71,7 +71,7 @@ export default function EditBounty() {
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
       return publicUrl;
     } catch (error) {
-      alert('Gagal mengupload gambar: ' + error.message);
+      showNotification('Gagal mengupload gambar: ' + error.message, 'error');
       return null;
     } finally {
       setUploading(false);
@@ -91,14 +91,12 @@ export default function EditBounty() {
 
       const payload = { ...formData, image_url: finalImageUrl };
       
-      // Ganti localhost
       await axios.put(`${API_URL}/api/bounties/${id}`, payload);
       
-      alert('Bounty Updated Successfully!');
-      // Replace history agar Back tidak kembali ke Edit
+      showNotification('Bounty Updated Successfully!', 'success');
       navigate(`/detail/${id}`, { replace: true });
     } catch (err) {
-      alert(err.response?.data?.error || 'Gagal update data.');
+      showNotification(err.response?.data?.error || 'Gagal update data.', 'error');
     } finally {
       setLoading(false);
     }
