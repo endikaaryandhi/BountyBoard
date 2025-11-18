@@ -1,4 +1,4 @@
-import { Home, ScrollText, PlusCircle, User, ClipboardCheck } from 'lucide-react';
+import { Home, ScrollText, PlusCircle, User, ClipboardCheck, LogIn } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,10 +14,9 @@ export default function Navbar() {
       : "text-paper/70 hover:text-paper hover:bg-[#4a332a]"}
   `;
 
+  // Sembunyikan navbar HANYA di halaman login/register
   const hideOnPaths = ['/login', '/register'];
-  
-  // Sembunyikan jika di halaman login/register atau user belum load
-  if (hideOnPaths.includes(location.pathname) || !user) return null;
+  if (hideOnPaths.includes(location.pathname)) return null;
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-wood border-b-8 border-[#3e2b25] shadow-2xl">
@@ -43,31 +42,43 @@ export default function Navbar() {
             <span className="hidden md:inline text-sm uppercase tracking-wider">Wanted</span>
           </button>
           
+          {/* Tombol Log (Captured) tetap tampil, kalau diklik guest akan diarahkan ke login oleh PrivateRoute */}
           <button onClick={() => navigate('/captured')} className={navItemClass('/captured')}>
             <ScrollText size={20} />
             <span className="hidden md:inline text-sm uppercase tracking-wider">Log</span>
           </button>
 
-          {/* MENU KHUSUS ADMIN: REVIEW / APPROVAL */}
-          {role === 'admin' && (
+          {/* Menu Admin: Hanya jika login DAN admin */}
+          {user && role === 'admin' && (
             <button onClick={() => navigate('/approval')} className={navItemClass('/approval')}>
               <ClipboardCheck size={20} />
               <span className="hidden md:inline text-sm uppercase tracking-wider">Review</span>
             </button>
           )}
 
+          {/* Tombol Post (Klik -> Redirect Login oleh PrivateRoute) */}
           <button onClick={() => navigate('/add')} className={navItemClass('/add')}>
             <PlusCircle size={20} />
             <span className="hidden md:inline text-sm uppercase tracking-wider">Post</span>
           </button>
 
-          {/* PROFILE BUTTON: Text berubah sesuai Role */}
-          <button onClick={() => navigate('/profile')} className={navItemClass('/profile')}>
-            <User size={20} />
-            <span className="hidden md:inline text-sm uppercase tracking-wider">
-              {role === 'admin' ? 'Master' : 'Hunter'}
-            </span>
-          </button>
+          {/* Logika Tombol Profile / Login */}
+          {user ? (
+            <button onClick={() => navigate('/profile')} className={navItemClass('/profile')}>
+              <User size={20} />
+              <span className="hidden md:inline text-sm uppercase tracking-wider">
+                {role === 'admin' ? 'Master' : 'Hunter'}
+              </span>
+            </button>
+          ) : (
+            <button 
+              onClick={() => navigate('/login')} 
+              className="flex items-center gap-2 px-4 py-2 rounded-md text-paper bg-[#4a332a] hover:bg-paper hover:text-wood transition-all font-bold shadow-md border border-paper/20"
+            >
+              <LogIn size={18} />
+              <span className="hidden md:inline text-sm uppercase tracking-wider">Login</span>
+            </button>
+          )}
         </div>
       </div>
     </nav>

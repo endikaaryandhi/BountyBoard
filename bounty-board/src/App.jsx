@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Captured from './pages/Captured';
 import Detail from './pages/Detail';
 import AddBounty from './pages/AddBounty';
-import EditBounty from './pages/EditBounty'; // Import Halaman Edit
+import EditBounty from './pages/EditBounty';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -28,14 +28,14 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
-              <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+              {/* MODIFIKASI: Hapus PrivateRoute agar bisa diakses Publik */}
+              <Route path="/" element={<Home />} />
+              <Route path="/detail/:id" element={<Detail />} />
+              
+              {/* Halaman ini tetap Butuh Login */}
               <Route path="/captured" element={<PrivateRoute><Captured /></PrivateRoute>} />
-              <Route path="/detail/:id" element={<PrivateRoute><Detail /></PrivateRoute>} />
               <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
-              
-              {/* RUTE EDIT (Menggunakan ID dinamis) */}
               <Route path="/edit/:id" element={<PrivateRoute><EditBounty /></PrivateRoute>} />
-              
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
             </Routes>
