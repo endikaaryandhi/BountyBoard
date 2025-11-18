@@ -5,10 +5,11 @@ import Home from './pages/Home';
 import Captured from './pages/Captured';
 import Detail from './pages/Detail';
 import AddBounty from './pages/AddBounty';
+import EditBounty from './pages/EditBounty'; // Import Halaman Edit
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Approval from './pages/Approval'; // Pastikan import ini ada
+import Approval from './pages/Approval';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -27,14 +28,15 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
-              {/* Protected Routes */}
               <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
               <Route path="/captured" element={<PrivateRoute><Captured /></PrivateRoute>} />
               <Route path="/detail/:id" element={<PrivateRoute><Detail /></PrivateRoute>} />
               <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
-              <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               
-              {/* Rute Approval ditambahkan disini */}
+              {/* RUTE EDIT (Menggunakan ID dinamis) */}
+              <Route path="/edit/:id" element={<PrivateRoute><EditBounty /></PrivateRoute>} />
+              
+              <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
             </Routes>
           </main>
