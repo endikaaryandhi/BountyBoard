@@ -13,6 +13,7 @@ export default function Approval() {
   // Proteksi: Hanya Admin yang boleh masuk
   useEffect(() => {
     if (role !== 'admin') {
+      // Jika bukan admin, tendang ke home
       navigate('/');
     }
     fetchPending();
@@ -30,24 +31,22 @@ export default function Approval() {
   const handleApprove = async (id) => {
     if(!confirm("Approve this bounty for Public List?")) return;
     try {
-      // Ubah status menjadi 'wanted' agar muncul di Home
       await axios.put(`http://localhost:3000/api/bounties/${id}/status`, { status: 'wanted' });
-      alert("Bounty Approved!");
+      alert("Bounty Approved! Moved to Wanted List.");
       fetchPending(); // Refresh list
     } catch (err) {
-      alert("Failed to approve");
+      alert("Failed to approve.");
     }
   };
 
   const handleReject = async (id) => {
     if(!confirm("Reject and Delete this request permanently?")) return;
     try {
-      // Ubah status ke 'rejected' (pastikan backend menghandle ini untuk menghapus data)
       await axios.put(`http://localhost:3000/api/bounties/${id}/status`, { status: 'rejected' });
-      alert("Bounty Rejected");
+      alert("Bounty Rejected and Deleted.");
       fetchPending(); // Refresh list
     } catch (err) {
-      alert("Failed to reject");
+      alert("Failed to reject.");
     }
   };
 
@@ -68,25 +67,25 @@ export default function Approval() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {pendingBounties.map(bounty => (
               <div key={bounty.id} className="relative group bg-black/20 p-2 rounded-lg border border-white/10">
-                {/* Overlay Action Buttons */}
+                {/* Tombol Aksi */}
                 <div className="absolute -top-4 -right-4 flex flex-col gap-2 z-50">
                    <button 
                      onClick={() => handleApprove(bounty.id)}
-                     className="bg-green-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform border-2 border-white" 
+                     className="bg-green-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform border-2 border-white cursor-pointer" 
                      title="Approve"
                    >
                       <CheckCircle size={24} />
                    </button>
                    <button 
                      onClick={() => handleReject(bounty.id)}
-                     className="bg-red-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform border-2 border-white" 
+                     className="bg-red-600 text-white p-3 rounded-full shadow-xl hover:scale-110 transition-transform border-2 border-white cursor-pointer" 
                      title="Reject"
                    >
                       <XCircle size={24} />
                    </button>
                 </div>
 
-                {/* Kartu Buronan (Non-clickable agar tidak masuk detail) */}
+                {/* Kartu Buronan (Non-clickable) */}
                 <div className="pointer-events-none opacity-90">
                     <BountyCard bounty={bounty} onClick={() => {}} />
                 </div>

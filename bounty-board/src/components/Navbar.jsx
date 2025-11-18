@@ -1,4 +1,4 @@
-import { Home, ScrollText, PlusCircle, User, ClipboardCheck } from 'lucide-react'; // Import Icon Baru
+import { Home, ScrollText, PlusCircle, User, ClipboardCheck } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,14 +15,15 @@ export default function Navbar() {
   `;
 
   const hideOnPaths = ['/login', '/register'];
-  if (hideOnPaths.includes(location.pathname) || !user) {
-    return null;
-  }
+  
+  // Sembunyikan jika di halaman login/register atau user belum load
+  if (hideOnPaths.includes(location.pathname) || !user) return null;
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-wood border-b-8 border-[#3e2b25] shadow-2xl">
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
         
+        {/* Logo */}
         <div onClick={() => navigate('/')} className="cursor-pointer flex items-center gap-3 group">
           <div className="w-10 h-10 bg-paper rounded-full flex items-center justify-center border-2 border-[#3e2b25] group-hover:rotate-12 transition-transform shadow-md">
             <span className="text-2xl filter sepia">☠️</span>
@@ -35,6 +36,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Menu Items */}
         <div className="flex items-center gap-1 md:gap-4">
           <button onClick={() => navigate('/')} className={navItemClass('/')}>
             <Home size={20} />
@@ -46,7 +48,7 @@ export default function Navbar() {
             <span className="hidden md:inline text-sm uppercase tracking-wider">Log</span>
           </button>
 
-          {/* MENU BARU: Hanya muncul jika role ADMIN */}
+          {/* MENU KHUSUS ADMIN: REVIEW / APPROVAL */}
           {role === 'admin' && (
             <button onClick={() => navigate('/approval')} className={navItemClass('/approval')}>
               <ClipboardCheck size={20} />
@@ -59,10 +61,11 @@ export default function Navbar() {
             <span className="hidden md:inline text-sm uppercase tracking-wider">Post</span>
           </button>
 
+          {/* PROFILE BUTTON: Text berubah sesuai Role */}
           <button onClick={() => navigate('/profile')} className={navItemClass('/profile')}>
             <User size={20} />
             <span className="hidden md:inline text-sm uppercase tracking-wider">
-               {role === 'admin' ? 'Master' : 'Hunter'}
+              {role === 'admin' ? 'Master' : 'Hunter'}
             </span>
           </button>
         </div>

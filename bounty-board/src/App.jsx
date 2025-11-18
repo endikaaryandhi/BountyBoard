@@ -8,11 +8,11 @@ import AddBounty from './pages/AddBounty';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Approval from './pages/Approval'; // IMPORT INI
+import Approval from './pages/Approval'; // Pastikan import ini ada
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="text-white text-center pt-20">Authenticating...</div>;
+  if (loading) return <div className="text-white text-center pt-20">Loading Guild Database...</div>;
   return user ? children : <Navigate to="/login" />;
 };
 
@@ -27,13 +27,14 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
+              {/* Protected Routes */}
               <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
               <Route path="/captured" element={<PrivateRoute><Captured /></PrivateRoute>} />
               <Route path="/detail/:id" element={<PrivateRoute><Detail /></PrivateRoute>} />
               <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
               
-              {/* TAMBAHKAN ROUTE INI */}
+              {/* Rute Approval ditambahkan disini */}
               <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
             </Routes>
           </main>
