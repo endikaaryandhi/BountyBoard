@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { useData } from '../context/DataContext';
 import BountyCard from '../components/BountyCard';
 
 export default function Approval() {
   const [pendingBounties, setPendingBounties] = useState([]);
   const { role } = useAuth();
   const { showNotification } = useNotification();
+  const { refreshData } = useData();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -33,6 +35,7 @@ export default function Approval() {
     try {
       await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
       showNotification('Bounty Approved!', 'success');
+      refreshData();
       fetchPending(); 
     } catch (err) {
       showNotification("Failed to approve", 'error');
@@ -44,6 +47,7 @@ export default function Approval() {
     try {
       await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'rejected' });
       showNotification('Bounty Rejected', 'info');
+      refreshData();
       fetchPending(); 
     } catch (err) {
       showNotification("Failed to reject", 'error');

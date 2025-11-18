@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { DataProvider } from './context/DataContext';
 import Navbar from './components/Navbar';
 import SplashScreen from './components/SplashScreen';
 import Home from './pages/Home';
@@ -26,32 +27,30 @@ export default function App() {
   return (
     <NotificationProvider>
       <AuthProvider>
-        {showSplash ? (
-          <SplashScreen onFinish={() => setShowSplash(false)} />
-        ) : (
-          <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  
-                  {/* HALAMAN PUBLIK */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/captured" element={<Captured />} /> {/* JADI PUBLIK */}
-                  <Route path="/detail/:id" element={<Detail />} />
-
-                  {/* HALAMAN PRIVATE */}
-                  <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
-                  <Route path="/edit/:id" element={<PrivateRoute><EditBounty /></PrivateRoute>} />
-                  <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                  <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
-                </Routes>
-              </main>
-            </div>
-          </BrowserRouter>
-        )}
+        <DataProvider>
+          {showSplash ? (
+            <SplashScreen onFinish={() => setShowSplash(false)} />
+          ) : (
+            <BrowserRouter>
+              <div className="flex flex-col min-h-screen">
+                <Navbar />
+                <main className="flex-grow">
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/captured" element={<Captured />} />
+                    <Route path="/detail/:id" element={<Detail />} />
+                    <Route path="/add" element={<PrivateRoute><AddBounty /></PrivateRoute>} />
+                    <Route path="/edit/:id" element={<PrivateRoute><EditBounty /></PrivateRoute>} />
+                    <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                    <Route path="/approval" element={<PrivateRoute><Approval /></PrivateRoute>} />
+                  </Routes>
+                </main>
+              </div>
+            </BrowserRouter>
+          )}
+        </DataProvider>
       </AuthProvider>
     </NotificationProvider>
   );

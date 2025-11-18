@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
 import { useNotification } from '../context/NotificationContext';
+import { useData } from '../context/DataContext';
 import { supabase } from '../config/supabase'; 
 import { Save, MapPin, Skull, DollarSign, User, Camera, X, Upload } from 'lucide-react';
 import Cropper from 'react-easy-crop'; 
@@ -12,6 +13,7 @@ export default function EditBounty() {
   const { id } = useParams();
   const { role } = useAuth();
   const { showNotification } = useNotification();
+  const { refreshData } = useData();
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -92,6 +94,7 @@ export default function EditBounty() {
       
       await axios.put(`${API_URL}/api/bounties/${id}`, payload);
       
+      refreshData();
       showNotification('Bounty Updated Successfully!', 'success');
       navigate(`/detail/${id}`, { replace: true });
     } catch (err) {
@@ -105,7 +108,6 @@ export default function EditBounty() {
 
   return (
     <div className="min-h-screen pb-24 pt-6 px-4 font-serif bg-transparent">
-      
       {imageSrc && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
           <div className="relative w-full max-w-md h-80 bg-gray-800 mb-4 border-4 border-paper">
