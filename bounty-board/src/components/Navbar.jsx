@@ -20,7 +20,6 @@ export default function Navbar() {
     }
   };
 
-  // Komponen Item Navigasi Biasa
   const NavItem = ({ to, icon: Icon, label }) => {
     const isActive = location.pathname === to;
     return (
@@ -28,7 +27,6 @@ export default function Navbar() {
         onClick={() => navigate(to)} 
         className={`relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 group ${isActive ? '-translate-y-2' : ''}`}
       >
-        {/* Active Indicator Background */}
         <div className={`absolute inset-0 bg-paper rounded-full opacity-0 transition-all duration-300 scale-0 ${isActive ? 'opacity-10 scale-100' : ''}`}></div>
         
         <Icon 
@@ -49,20 +47,16 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Spacer agar konten paling bawah tidak tertutup navbar */}
       <div className="h-24" />
       
       <nav className="fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
-        {/* Container Navbar: Bentuk Kayu Melayang */}
         <div className="bg-wood/95 backdrop-blur-md border-2 border-paper/20 rounded-2xl shadow-2xl shadow-black/50 px-2 h-16 flex justify-between items-center relative">
           
-          {/* Left Group */}
           <div className="flex-1 flex justify-around items-center">
             <NavItem to="/" icon={Home} label="Home" />
             <NavItem to="/captured" icon={ScrollText} label="Logs" />
           </div>
 
-          {/* Center Floating Button (Post) */}
           <div className="relative -top-6 mx-2">
             <button 
               onClick={handlePostClick}
@@ -73,12 +67,10 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Right Group */}
           <div className="flex-1 flex justify-around items-center">
             {user && role === 'admin' ? (
                <NavItem to="/approval" icon={ClipboardCheck} label="Review" />
             ) : (
-               // Placeholder kosong jika bukan admin agar simetris, atau bisa diisi fitur lain
                <div className="w-14" /> 
             )}
             
