@@ -1,13 +1,13 @@
-import { Home, ScrollText, Plus, User, ClipboardCheck, LogIn } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Home, ScrollText, Plus, User, ClipboardCheck, LogIn, LogOut } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useNotification } from '../context/NotificationContext'; 
+import { useNotification } from '../context/NotificationContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, role } = useAuth();
-  const { showNotification } = useNotification(); 
+  const { user, role, signOut } = useAuth();
+  const { showNotification } = useNotification();
 
   const hideOnPaths = ['/login', '/register'];
   if (hideOnPaths.includes(location.pathname)) return null;
@@ -18,6 +18,11 @@ export default function Navbar() {
     } else {
       navigate('/add');
     }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
   };
 
   const NavItem = ({ to, icon: Icon, label }) => {
@@ -39,7 +44,6 @@ export default function Navbar() {
           {label}
         </span>
         
-        {/* Dot Indicator for Active State */}
         {isActive && <div className="absolute -bottom-2 w-1 h-1 bg-paper rounded-full shadow-[0_0_5px_#F5E6C8]"></div>}
       </button>
     );
@@ -47,11 +51,53 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="h-24" />
-      
-      <nav className="fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
+      <nav className="hidden md:flex fixed top-0 left-0 right-0 h-20 bg-wood/95 backdrop-blur-md border-b-4 border-paper shadow-2xl z-50 px-8 justify-between items-center">
+        <Link to="/" className="text-3xl font-serif font-black text-paper tracking-[0.2em] uppercase drop-shadow-md flex items-center gap-3">
+          <div className="w-10 h-10 bg-paper rounded-full border-2 border-stone-800 flex items-center justify-center text-wood">☠️</div>
+          BOUNTY BOARD
+        </Link>
+
+        <div className="flex items-center gap-8">
+          <Link to="/" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Home</Link>
+          <Link to="/captured" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/captured' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Logs</Link>
+          {user && role === 'admin' && (
+             <Link to="/approval" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/approval' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Review</Link>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={handlePostClick}
+            className="bg-paper text-wood px-6 py-2 rounded-sm font-bold uppercase tracking-wider hover:bg-white transition-colors shadow-lg flex items-center gap-2"
+          >
+            <Plus size={18} strokeWidth={3} /> Post Bounty
+          </button>
+
+          {user ? (
+            <div className="flex items-center gap-4 border-l-2 border-paper/20 pl-4">
+              <Link to="/profile" className="flex items-center gap-2 group">
+                 <div className="text-right hidden lg:block">
+                    <p className="text-xs text-paper font-bold uppercase tracking-wider">{user.email?.split('@')[0]}</p>
+                    <p className="text-[10px] text-paper/60 uppercase">{role}</p>
+                 </div>
+                 <div className="w-10 h-10 bg-paper/20 rounded-full flex items-center justify-center border-2 border-paper group-hover:bg-paper group-hover:text-wood transition-colors">
+                    <User size={20} />
+                 </div>
+              </Link>
+              <button onClick={handleLogout} className="text-red-400 hover:text-red-300 transition-colors" title="Logout">
+                <LogOut size={20} />
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="text-paper font-bold uppercase tracking-widest hover:text-white flex items-center gap-2">
+              <LogIn size={18} /> Login
+            </Link>
+          )}
+        </div>
+      </nav>
+
+      <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
         <div className="bg-wood/95 backdrop-blur-md border-2 border-paper/20 rounded-2xl shadow-2xl shadow-black/50 px-2 h-16 flex justify-between items-center relative">
-          
           <div className="flex-1 flex justify-around items-center">
             <NavItem to="/" icon={Home} label="Home" />
             <NavItem to="/captured" icon={ScrollText} label="Logs" />
@@ -80,7 +126,6 @@ export default function Navbar() {
               <NavItem to="/login" icon={LogIn} label="Login" />
             )}
           </div>
-
         </div>
       </nav>
     </>

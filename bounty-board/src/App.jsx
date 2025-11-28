@@ -32,9 +32,9 @@ export default function App() {
             <SplashScreen onFinish={() => setShowSplash(false)} />
           ) : (
             <BrowserRouter>
-              <div className="flex flex-col min-h-screen">
+              <div className="flex flex-col min-h-screen bg-[#2e2622] bg-[url('https://www.transparenttextures.com/patterns/dark-wood.png')] text-[#F5E6C8]">
                 <Navbar />
-                <main className="flex-grow">
+                <main className="flex-grow pt-4 pb-28 md:pt-24 md:pb-8">
                   <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />

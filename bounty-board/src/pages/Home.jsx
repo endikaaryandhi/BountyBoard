@@ -63,9 +63,9 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-transparent pb-12">
-      <div className="max-w-md mx-auto mt-8 px-4 mb-8 relative z-10">
-        <div className="bg-paper border-2 border-wood/30 shadow-lg p-4 transform -rotate-1 rounded-sm relative">
+    <div className="min-h-screen bg-transparent">
+      <div className="w-full max-w-4xl mx-auto mt-4 px-4 mb-8 relative z-10 flex flex-col md:flex-row items-center gap-4">
+        <div className="bg-paper border-2 border-wood/30 shadow-lg p-4 transform md:-rotate-1 rounded-sm relative w-full md:flex-1">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gray-800 border border-gray-500 shadow"></div>
           <h2 className="text-center text-wood font-serif font-bold uppercase tracking-widest mb-2 border-b border-wood/20 pb-1">
             Find Target
@@ -82,20 +82,20 @@ export default function Home() {
         </div>
 
         {role === 'admin' && (
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="flex md:flex-col justify-center gap-2 bg-black/20 p-2 rounded-lg border border-white/10">
             <button 
               onClick={() => setView('wanted')}
-              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 transition-all ${view === 'wanted' ? 'bg-wood text-paper border-wood' : 'bg-black/40 text-white/70 border-transparent hover:bg-black/60'}`}
+              className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider border-2 transition-all w-full ${view === 'wanted' ? 'bg-wood text-paper border-wood' : 'bg-transparent text-white/70 border-transparent hover:bg-black/40'}`}
             >
               Public List
             </button>
             <button 
               onClick={() => setView('pending')}
-              className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border-2 transition-all flex items-center gap-2 ${view === 'pending' ? 'bg-orange-700 text-white border-orange-900' : 'bg-black/40 text-white/70 border-transparent hover:bg-black/60'}`}
+              className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider border-2 transition-all flex items-center justify-center gap-2 w-full ${view === 'pending' ? 'bg-orange-700 text-white border-orange-900' : 'bg-transparent text-white/70 border-transparent hover:bg-black/40'}`}
             >
-              Pending Approval 
+              Pending 
               {pendingBounties.length > 0 && (
-                <span className="bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-md">
                   {pendingBounties.length}
                 </span>
               )}
@@ -104,8 +104,8 @@ export default function Home() {
         )}
       </div>
 
-      <div className="max-w-6xl mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredBounties.map(bounty => (
             <div key={bounty.id} className="relative group">
                <BountyCard bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
@@ -113,10 +113,10 @@ export default function Home() {
                {view === 'pending' && role === 'admin' && (
                  <>
                     <div className="absolute inset-0 bg-black/60 z-30 rounded-sm flex items-center justify-center gap-4 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button onClick={(e) => handleApprove(bounty.id, e)} className="bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-green-500 transition-all" title="Approve">
+                        <button onClick={(e) => handleApprove(bounty.id, e)} className="bg-green-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-green-500 transition-all cursor-pointer" title="Approve">
                             <CheckCircle size={40} />
                         </button>
-                        <button onClick={(e) => handleReject(bounty.id, e)} className="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-red-500 transition-all" title="Reject">
+                        <button onClick={(e) => handleReject(bounty.id, e)} className="bg-red-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-red-500 transition-all cursor-pointer" title="Reject">
                             <XCircle size={40} />
                         </button>
                     </div>
