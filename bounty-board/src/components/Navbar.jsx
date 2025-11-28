@@ -62,7 +62,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-8">
           <Link to="/" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Home</Link>
-          <Link to="/captured" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/captured' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Logs</Link>
+          <Link to="/captured" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/captured' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Captured</Link>
           {user && role === 'admin' && (
              <Link to="/approval" className={`text-sm font-bold uppercase tracking-widest hover:text-paper transition-colors ${location.pathname === '/approval' ? 'text-paper underline underline-offset-4 decoration-2' : 'text-paper/60'}`}>Review</Link>
           )}

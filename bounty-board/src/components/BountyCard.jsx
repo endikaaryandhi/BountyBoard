@@ -12,11 +12,11 @@ export default function BountyCard({ bounty, onClick }) {
     >
       <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-30 w-4 h-4 rounded-full bg-gray-800 border-2 border-gray-400 shadow-md"></div>
 
-      <div className="bg-paper p-4 pb-8 shadow-xl border-t border-l border-white/40 relative overflow-hidden">
+      <div className="bg-paper p-4 pb-8 shadow-xl border-t border-l border-white/40 relative overflow-hidden text-wood">
         
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] opacity-30 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/beige-paper.png')] opacity-30 pointer-events-none"></div>
 
-        <div className="text-center border-b-4 border-wood mb-3 pb-1">
+        <div className="text-center border-b-4 border-wood mb-3 pb-1 relative z-10">
           <h2 className="text-4xl font-serif font-black text-wood tracking-widest uppercase scale-y-110">WANTED</h2>
           <p className="text-xs font-bold text-wood uppercase tracking-[0.2em]">Dead or Alive</p>
         </div>
