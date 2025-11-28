@@ -2,6 +2,7 @@ import { Home, ScrollText, Plus, User, ClipboardCheck, LogIn, LogOut } from 'luc
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import logoImage from '../assets/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -50,8 +51,12 @@ export default function Navbar() {
   return (
     <>
       <nav className="hidden md:flex fixed top-0 left-0 right-0 h-20 bg-wood/95 backdrop-blur-md border-b-4 border-paper shadow-2xl z-50 px-8 justify-between items-center">
-        <Link to="/" className="text-3xl font-serif font-black text-paper tracking-[0.2em] uppercase drop-shadow-md flex items-center gap-3">
-          <div className="w-10 h-10 bg-paper rounded-full border-2 border-stone-800 flex items-center justify-center text-wood">☠️</div>
+        <Link to="/" className="text-2xl font-serif font-black text-paper tracking-[0.2em] uppercase drop-shadow-md flex items-center gap-3">
+          <img 
+            src={logoImage} 
+            alt="Bounty Board Logo" 
+            className="w-8 h-8 md:w-14 md:h-14 rounded-full border-2 border-stone-800 object-contain bg-paper"
+          />
           BOUNTY BOARD
         </Link>
 
@@ -96,6 +101,7 @@ export default function Navbar() {
 
       <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
         <div className="bg-wood/95 backdrop-blur-md border-2 border-paper/20 rounded-2xl shadow-2xl shadow-black/50 px-2 h-16 flex justify-between items-center relative">
+          
           <div className="flex-1 flex justify-around items-center">
             <NavItem to="/" icon={Home} label="Home" />
             <NavItem to="/captured" icon={ScrollText} label="Logs" />
@@ -124,6 +130,7 @@ export default function Navbar() {
               <NavItem to="/login" icon={LogIn} label="Login" />
             )}
           </div>
+
         </div>
       </nav>
     </>

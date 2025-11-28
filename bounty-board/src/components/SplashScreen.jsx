@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import logoImage from '../assets/logo.png';
 
 export default function SplashScreen({ onFinish }) {
   const [fade, setFade] = useState(false);
@@ -19,9 +20,13 @@ export default function SplashScreen({ onFinish }) {
 
   return (
     <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#2e2622] bg-[url('https://www.transparenttextures.com/patterns/dark-wood.png')] transition-opacity duration-700 ${fade ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="relative w-32 h-32 mb-6 animate-bounce">
+      <div className="relative w-40 h-40 mb-6 animate-bounce">
         <div className="absolute inset-0 bg-paper rounded-full border-4 border-[#5D4037] flex items-center justify-center shadow-2xl">
-          <span className="text-6xl filter sepia">☠️</span>
+          <img 
+            src={logoImage} 
+            alt="Logo" 
+            className="w-full h-full p-4 object-contain filter sepia" 
+          />
         </div>
       </div>
       
