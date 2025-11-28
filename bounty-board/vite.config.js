@@ -1,5 +1,3 @@
-// endikaaryandhi/bountyboard/BountyBoard-d5db89b60de7f1db5a07c8e05176e7b70460f280/bounty-board/vite.config.js
-
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -14,9 +12,9 @@ export default defineConfig({
         name: 'Bounty Board Guild',
         short_name: 'BountyBoard',
         description: 'Official Guild Bounty Tracking System',
-        theme_color: '#2e2622', // Sesuai warna background di index.css
+        theme_color: '#2e2622', 
         background_color: '#2e2622',
-        display: 'standalone', // Ini yang membuat tampilan seperti aplikasi native (tanpa address bar browser)
+        display: 'standalone', 
         orientation: 'portrait',
         scope: '/',
         start_url: '/',

@@ -1,88 +1,122 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Search, CheckCircle, XCircle } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Filter } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 import { useAuth } from '../context/AuthContext';
-import { useNotification } from '../context/NotificationContext';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
   const [bounties, setBounties] = useState([]);
   const [pendingBounties, setPendingBounties] = useState([]);
   const [search, setSearch] = useState('');
-  const [view, setView] = useState('wanted');
+  const [view, setView] = useState('wanted'); 
+  const [minReward, setMinReward] = useState('');
+  const [maxReward, setMaxReward] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
   const { role } = useAuth();
-  const { showNotification } = useNotification();
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  const fetchData = () => {
-    axios.get(`${API_URL}/api/bounties`) 
-      .then(res => {
-        setBounties(res.data.filter(b => b.status === 'wanted'));
-        setPendingBounties(res.data.filter(b => b.status === 'pending'));
-      })
-      .catch(err => console.error(err));
-  };
 
   useEffect(() => {
-    fetchData();
+    fetchBounties();
   }, []);
+
+  const fetchBounties = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/bounties`);
+      const allBounties = res.data;
+      setBounties(allBounties.filter(b => b.status === 'wanted'));
+      setPendingBounties(allBounties.filter(b => b.status === 'pending'));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleApprove = async (id, e) => {
     e.stopPropagation();
-    if(!confirm("Approve this bounty to Public List?")) return;
-    
+    if (!window.confirm('Approve this bounty?')) return;
     try {
-        await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
-        showNotification('Bounty Approved!', 'success');
-        fetchData();
+      await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
+      fetchBounties();
     } catch (err) {
-        showNotification("Error approving", 'error');
+      alert('Failed to approve');
     }
   };
 
   const handleReject = async (id, e) => {
     e.stopPropagation();
-    if(!confirm("Reject and Delete this request?")) return;
-
+    if (!window.confirm('Reject and delete this bounty?')) return;
     try {
-        await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'rejected' });
-        showNotification('Bounty Rejected', 'info');
-        fetchData();
+      await axios.delete(`${API_URL}/api/bounties/${id}`);
+      fetchBounties();
     } catch (err) {
-        showNotification("Error rejecting", 'error');
+      alert('Failed to reject');
     }
   };
 
-  const listToShow = view === 'wanted' ? bounties : pendingBounties;
+  const targetList = view === 'wanted' ? bounties : pendingBounties;
 
-  const filteredBounties = listToShow.filter(b => 
-    b.name.toLowerCase().includes(search.toLowerCase()) || 
-    b.crime.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBounties = targetList.filter(b => {
+    const matchesSearch = b.name.toLowerCase().includes(search.toLowerCase()) || 
+                          b.crime?.toLowerCase().includes(search.toLowerCase());
+    
+    const amount = parseFloat(b.bounty_amount);
+    const matchesMin = minReward === '' || amount >= parseFloat(minReward);
+    const matchesMax = maxReward === '' || amount <= parseFloat(maxReward);
+
+    return matchesSearch && matchesMin && matchesMax;
+  });
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="w-full max-w-4xl mx-auto mt-4 px-4 mb-8 relative z-10 flex flex-col md:flex-row items-center gap-4">
-        <div className="bg-paper border-2 border-wood/30 shadow-lg p-4 transform md:-rotate-1 rounded-sm relative w-full md:flex-1">
+      <div className="w-full max-w-4xl mx-auto mt-4 px-4 mb-8 relative z-10 flex flex-col md:flex-row items-start md:items-center gap-4">
+        <div className="bg-paper border-2 border-wood/30 shadow-lg p-4 transform md:-rotate-1 rounded-sm relative w-full md:flex-1 transition-all duration-300">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gray-800 border border-gray-500 shadow"></div>
           <h2 className="text-center text-wood font-serif font-bold uppercase tracking-widest mb-2 border-b border-wood/20 pb-1">
             Find Target
           </h2>
-          <div className="relative">
-            <input 
-              type="text"
-              placeholder="Search name or crime..."
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-stone-100/50 text-wood placeholder-wood/40 border border-wood/20 rounded px-4 py-2 pl-10 outline-none focus:bg-white focus:border-wood transition-all font-serif"
-            />
-            <Search className="absolute left-3 top-2.5 text-wood/50" size={18} />
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <input 
+                type="text"
+                placeholder="Search name or crime..."
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-stone-100/50 text-wood placeholder-wood/40 border border-wood/20 rounded px-4 py-2 pl-10 outline-none focus:bg-white focus:border-wood transition-all font-serif"
+              />
+              <Search className="absolute left-3 top-2.5 text-wood/50" size={18} />
+            </div>
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className={`p-2 rounded border border-wood/20 hover:bg-wood/10 transition-colors ${showFilters ? 'bg-wood/20 text-wood' : 'text-wood/60'}`}
+              title="Filter Price"
+            >
+              <Filter size={20} />
+            </button>
           </div>
+          
+          {showFilters && (
+            <div className="mt-3 flex gap-2 animate-in slide-in-from-top-2 fade-in duration-200">
+              <input 
+                type="number" 
+                placeholder="Min Reward" 
+                value={minReward}
+                onChange={(e) => setMinReward(e.target.value)}
+                className="w-1/2 bg-stone-100/50 text-wood placeholder-wood/40 border border-wood/20 rounded px-3 py-1 outline-none focus:bg-white focus:border-wood font-serif text-sm"
+              />
+              <input 
+                type="number" 
+                placeholder="Max Reward" 
+                value={maxReward}
+                onChange={(e) => setMaxReward(e.target.value)}
+                className="w-1/2 bg-stone-100/50 text-wood placeholder-wood/40 border border-wood/20 rounded px-3 py-1 outline-none focus:bg-white focus:border-wood font-serif text-sm"
+              />
+            </div>
+          )}
         </div>
 
         {role === 'admin' && (
-          <div className="flex md:flex-col justify-center gap-2 bg-black/20 p-2 rounded-lg border border-white/10">
+          <div className="flex md:flex-col justify-center gap-2 bg-black/20 p-2 rounded-lg border border-white/10 w-full md:w-auto">
             <button 
               onClick={() => setView('wanted')}
               className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider border-2 transition-all w-full ${view === 'wanted' ? 'bg-wood text-paper border-wood' : 'bg-transparent text-white/70 border-transparent hover:bg-black/40'}`}
@@ -104,7 +138,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto p-4">
+      <div className="max-w-7xl mx-auto p-4 pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredBounties.map(bounty => (
             <div key={bounty.id} className="relative group">
