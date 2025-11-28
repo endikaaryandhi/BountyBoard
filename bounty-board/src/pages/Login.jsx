@@ -29,7 +29,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-paper p-8 rounded-sm shadow-2xl border-4 border-wood max-w-md w-full transform rotate-1">
         <h2 className="text-3xl font-serif font-black text-wood text-center mb-6 uppercase tracking-widest border-b-4 border-wood pb-2">
           Hunter Login
@@ -64,6 +64,16 @@ export default function Login() {
         <p className="text-center mt-4 text-wood text-sm">
           New Hunter? <Link to="/register" className="font-bold underline">Sign Up</Link>
         </p>
+
+        <div className="mt-6 pt-4 border-t-2 border-wood/20 flex flex-col items-center gap-2">
+          <span className="text-wood/60 text-xs font-bold uppercase tracking-widest">or</span>
+          <Link 
+            to="/" 
+            className="text-wood font-bold uppercase tracking-widest text-sm hover:underline underline-offset-4 decoration-2"
+          >
+            Continue as Guest
+          </Link>
+        </div>
       </div>
     </div>
   );

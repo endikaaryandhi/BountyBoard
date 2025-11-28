@@ -30,7 +30,7 @@ export default function Navbar() {
     return (
       <button 
         onClick={() => navigate(to)} 
-        className={`relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 group ${isActive ? '-translate-y-2' : ''}`}
+        className={`relative flex flex-col items-center justify-center w-14 h-14 transition-all duration-300 group ${isActive ? '-translate-y-1' : ''}`}
       >
         <div className={`absolute inset-0 bg-paper rounded-full opacity-0 transition-all duration-300 scale-0 ${isActive ? 'opacity-10 scale-100' : ''}`}></div>
         
@@ -43,8 +43,6 @@ export default function Navbar() {
         <span className={`text-[10px] font-bold uppercase tracking-widest mt-1 transition-all duration-300 ${isActive ? 'text-paper opacity-100' : 'text-paper/0 opacity-0 h-0 overflow-hidden group-hover:text-paper/50 group-hover:opacity-100 group-hover:h-auto'}`}>
           {label}
         </span>
-        
-        {isActive && <div className="absolute -bottom-2 w-1 h-1 bg-paper rounded-full shadow-[0_0_5px_#F5E6C8]"></div>}
       </button>
     );
   };
@@ -103,13 +101,13 @@ export default function Navbar() {
             <NavItem to="/captured" icon={ScrollText} label="Logs" />
           </div>
 
-          <div className="relative -top-6 mx-2">
+          <div className="mx-2">
             <button 
               onClick={handlePostClick}
-              className="w-16 h-16 bg-gradient-to-b from-paper to-[#d4c5a9] rounded-full border-[6px] border-[#2e2622] shadow-[0_8px_10px_rgba(0,0,0,0.4)] flex items-center justify-center transform transition-transform active:scale-90 group"
+              className="w-12 h-12 bg-gradient-to-b from-paper to-[#d4c5a9] rounded-full shadow-lg flex items-center justify-center transform transition-transform active:scale-90 group border-2 border-wood"
             >
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-wood/30 animate-[spin_10s_linear_infinite]"></div>
-              <Plus size={32} className="text-wood drop-shadow-sm group-hover:rotate-90 transition-transform duration-300" strokeWidth={3} />
+              <div className="absolute inset-0 rounded-full border border-dashed border-wood/30 animate-[spin_10s_linear_infinite]"></div>
+              <Plus size={24} className="text-wood drop-shadow-sm group-hover:rotate-90 transition-transform duration-300" strokeWidth={3} />
             </button>
           </div>
 
