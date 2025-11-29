@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Search, CheckCircle, XCircle, Filter, ArrowDown, ArrowUp } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
-  const [bounties, setBounties] = useState([]);
-  const [pendingBounties, setPendingBounties] = useState([]);
+  const { bounties: allBounties, refreshData } = useData();
   const [search, setSearch] = useState('');
   const [view, setView] = useState('wanted'); 
   const [minReward, setMinReward] = useState('');
@@ -19,27 +19,15 @@ export default function Home() {
   const navigate = useNavigate();
   const { role } = useAuth();
 
-  useEffect(() => {
-    fetchBounties();
-  }, []);
-
-  const fetchBounties = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/bounties`);
-      const allBounties = res.data;
-      setBounties(allBounties.filter(b => b.status === 'wanted'));
-      setPendingBounties(allBounties.filter(b => b.status === 'pending'));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const bounties = allBounties.filter(b => b.status === 'wanted');
+  const pendingBounties = allBounties.filter(b => b.status === 'pending');
 
   const handleApprove = async (id, e) => {
     e.stopPropagation();
     if (!window.confirm('Approve this bounty?')) return;
     try {
       await axios.put(`${API_URL}/api/bounties/${id}/status`, { status: 'wanted' });
-      fetchBounties();
+      refreshData();
     } catch (err) {
       alert('Failed to approve');
     }
@@ -50,7 +38,7 @@ export default function Home() {
     if (!window.confirm('Reject and delete this bounty?')) return;
     try {
       await axios.delete(`${API_URL}/api/bounties/${id}`);
-      fetchBounties();
+      refreshData();
     } catch (err) {
       alert('Failed to reject');
     }
