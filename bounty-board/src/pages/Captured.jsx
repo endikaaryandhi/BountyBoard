@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ArrowDown, ArrowUp } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -11,6 +11,7 @@ export default function Captured() {
   const [search, setSearch] = useState('');
   const [minReward, setMinReward] = useState('');
   const [maxReward, setMaxReward] = useState('');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
 
@@ -29,6 +30,10 @@ export default function Captured() {
     const matchesMax = maxReward === '' || amount <= parseFloat(maxReward);
 
     return matchesSearch && matchesMin && matchesMax;
+  }).sort((a, b) => {
+    const amountA = parseFloat(a.bounty_amount);
+    const amountB = parseFloat(b.bounty_amount);
+    return sortOrder === 'asc' ? amountA - amountB : amountB - amountA;
   });
 
   return (
@@ -49,6 +54,15 @@ export default function Captured() {
               />
               <Search className="absolute left-3 top-2.5 text-wood/50" size={18} />
             </div>
+
+            <button 
+              onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+              className="p-2 rounded border border-wood/20 hover:bg-wood/10 transition-colors text-wood/60"
+              title={sortOrder === 'desc' ? "Termahal ke Termurah" : "Termurah ke Termahal"}
+            >
+              {sortOrder === 'desc' ? <ArrowDown size={20} /> : <ArrowUp size={20} />}
+            </button>
+
             <button 
               onClick={() => setShowFilters(!showFilters)}
               className={`p-2 rounded border border-wood/20 hover:bg-wood/10 transition-colors ${showFilters ? 'bg-wood/20 text-wood' : 'text-wood/60'}`}
