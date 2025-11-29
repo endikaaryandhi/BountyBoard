@@ -6,7 +6,6 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [role, setRole] = useState('hunter');
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -17,7 +16,7 @@ export default function Register() {
       options: { 
         data: { 
           username,
-          role
+          role: 'hunter'
         } 
       } 
     });
@@ -43,18 +42,6 @@ export default function Register() {
               onChange={e => setUsername(e.target.value)} 
               required 
             />
-          </div>
-
-          <div>
-            <label className="text-xs font-bold text-wood uppercase ml-1">Role Selection</label>
-            <select 
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full p-3 bg-transparent border-2 border-wood/50 text-wood font-bold focus:border-wood outline-none cursor-pointer"
-            >
-              <option value="hunter">⚔️ Bounty Hunter</option>
-              <option value="admin">👑 Guild Master (Admin)</option>
-            </select>
           </div>
 
           <div>
