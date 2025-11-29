@@ -1,7 +1,17 @@
+import { useInView } from 'react-intersection-observer';
+import { useState } from 'react';
+
 export default function BountyCard({ bounty, onClick }) {
   const isCaptured = bounty.status === 'captured';
-  
   const confidentialImage = "https://placehold.co/400x500/2e2622/F5E6C8?text=CONFIDENTIAL&font=serif";
+  
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+    rootMargin: '100px 0px' 
+  });
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div 
@@ -21,13 +31,21 @@ export default function BountyCard({ bounty, onClick }) {
           <p className="text-xs font-bold text-wood uppercase tracking-[0.2em]">Dead or Alive</p>
         </div>
 
-        <div className="relative aspect-[3/4] bg-gray-200 border-4 border-wood mb-3 overflow-hidden">
-          <img 
-            src={bounty.image_url || confidentialImage} 
-            alt={bounty.name} 
-            loading="lazy"
-            className="w-full h-full object-cover sepia-[.3] contrast-125 group-hover:scale-110 transition-transform duration-700"
-          />
+        <div ref={ref} className="relative aspect-[3/4] bg-gray-800 border-4 border-wood mb-3 overflow-hidden">
+          {!isLoaded && (
+             <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-wood/30 border-t-wood rounded-full animate-spin"></div>
+             </div>
+          )}
+          
+          {inView ? (
+            <img 
+              src={bounty.image_url || confidentialImage} 
+              alt={bounty.name} 
+              onLoad={() => setIsLoaded(true)}
+              className={`w-full h-full object-cover sepia-[.3] contrast-125 group-hover:scale-110 transition-transform duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            />
+          ) : null}
           
           {isCaptured && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px] z-20">
