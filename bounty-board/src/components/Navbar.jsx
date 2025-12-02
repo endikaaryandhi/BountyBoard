@@ -1,7 +1,9 @@
 import { Home, ScrollText, Plus, User, ClipboardCheck, LogIn, LogOut } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { supabase } from '../config/supabase';
 import logoImage from '../assets/logo.png';
 
 export default function Navbar() {
@@ -9,6 +11,23 @@ export default function Navbar() {
   const location = useLocation();
   const { user, role, signOut } = useAuth();
   const { showNotification } = useNotification();
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      const fetchProfile = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        if (data) {
+          setProfileImage(data.avatar_url);
+        }
+      };
+      fetchProfile();
+    }
+  }, [user]);
 
   const hideOnPaths = ['/login', '/register'];
   if (hideOnPaths.includes(location.pathname)) return null;
@@ -83,8 +102,12 @@ export default function Navbar() {
                     <p className="text-xs text-paper font-bold uppercase tracking-wider">{user.email?.split('@')[0]}</p>
                     <p className="text-[10px] text-paper/60 uppercase">{role}</p>
                  </div>
-                 <div className="w-10 h-10 bg-paper/20 rounded-full flex items-center justify-center border-2 border-paper group-hover:bg-paper group-hover:text-wood transition-colors">
-                    <User size={20} />
+                 <div className="w-10 h-10 bg-paper/20 rounded-full flex items-center justify-center border-2 border-paper group-hover:bg-paper group-hover:text-wood transition-colors overflow-hidden">
+                    {profileImage ? (
+                      <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={20} />
+                    )}
                  </div>
               </Link>
               <button onClick={handleLogout} className="text-red-400 hover:text-red-300 transition-colors" title="Logout">
