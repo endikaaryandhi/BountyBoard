@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import tailwindcss from '@tailwindcss/vite' 
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
@@ -12,9 +14,9 @@ export default defineConfig({
         name: 'Bounty Board Guild',
         short_name: 'BountyBoard',
         description: 'Official Guild Bounty Tracking System',
-        theme_color: '#2e2622', 
+        theme_color: '#2e2622',
         background_color: '#2e2622',
-        display: 'standalone', 
+        display: 'standalone',
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
@@ -33,7 +35,7 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable' 
+            purpose: 'any maskable'
           }
         ]
       }

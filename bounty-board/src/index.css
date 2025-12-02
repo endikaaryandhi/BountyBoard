@@ -1,9 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  font-family: 'Georgia', serif;
+@theme {
+  --color-wood: #5D4037;
+  --color-paper: #F5E6C8;
+  --color-stamp: #D32F2F;
+  
+  --font-serif: 'Georgia', serif;
 }
 
 body {
@@ -15,7 +17,8 @@ body {
     linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url("https://www.transparenttextures.com/patterns/dark-wood.png");
   background-attachment: fixed; 
-  color: #F5E6C8; 
+  color: var(--color-paper); 
+  font-family: var(--font-serif);
 }
 
 ::-webkit-scrollbar {
@@ -25,7 +28,7 @@ body {
   background: #2a1d18;
 }
 ::-webkit-scrollbar-thumb {
-  background: #5D4037;
+  background: var(--color-wood); 
   border-radius: 5px;
   border: 2px solid #2a1d18;
 }
