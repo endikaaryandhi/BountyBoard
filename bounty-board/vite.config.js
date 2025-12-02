@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import tailwindcss from '@tailwindcss/vite' 
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
