@@ -78,37 +78,18 @@ export default function Detail() {
             </div>
           </div>
           
-          <div className="w-full md:w-1/2 flex flex-col justify-between overflow-hidden">
+          <div className="w-full md:w-1/2 flex flex-col justify-between">
             <div>
-                {/* PERBAIKAN 1: Tambahkan break-words pada judul agar turun ke bawah jika kepanjangan */}
-                <h1 className="text-4xl md:text-5xl font-black text-wood text-left uppercase tracking-widest border-b-4 border-wood pb-2 mb-6 leading-none break-words">
-                    {bounty.name}
-                </h1>
+                <h1 className="text-4xl md:text-5xl font-black text-wood text-left uppercase tracking-widest border-b-4 border-wood pb-2 mb-6 leading-none">{bounty.name}</h1>
                 
                 <div className="space-y-4 text-wood font-serif text-lg">
-                    {/* PERBAIKAN 2: Tambahkan shrink-0 pada label dan break-words/text-right pada value */}
-                    <div className="flex justify-between border-b border-wood/20 pb-1 gap-4">
-                        <span className="font-bold opacity-70 shrink-0">ALIAS</span>
-                        <span className="font-bold text-right break-words">{bounty.alias || '-'}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-wood/20 pb-1 gap-4">
-                        <span className="font-bold opacity-70 shrink-0">CRIME</span>
-                        <span className="text-red-700 font-black uppercase text-right break-words">{bounty.crime}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-wood/20 pb-1 gap-4">
-                        <span className="font-bold opacity-70 shrink-0">REWARD</span>
-                        <span className="font-black text-2xl text-right break-all">$ {parseInt(bounty.bounty_amount).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-wood/20 pb-1 gap-4">
-                        <span className="font-bold opacity-70 shrink-0">LAST SEEN</span>
-                        <span className="text-right break-words">{bounty.last_seen}</span>
-                    </div>
-                    
+                    <div className="flex justify-between border-b border-wood/20 pb-1"><span className="font-bold opacity-70">ALIAS</span><span className="font-bold">{bounty.alias || '-'}</span></div>
+                    <div className="flex justify-between border-b border-wood/20 pb-1"><span className="font-bold opacity-70">CRIME</span><span className="text-red-700 font-black uppercase text-right">{bounty.crime}</span></div>
+                    <div className="flex justify-between border-b border-wood/20 pb-1"><span className="font-bold opacity-70">REWARD</span><span className="font-black text-2xl">$ {parseInt(bounty.bounty_amount).toLocaleString()}</span></div>
+                    <div className="flex justify-between border-b border-wood/20 pb-1"><span className="font-bold opacity-70">LAST SEEN</span><span className="text-right">{bounty.last_seen}</span></div>
                     <div className="pt-4">
                         <p className="text-sm opacity-70 font-bold mb-2 uppercase tracking-wide">Official Description:</p>
-                        <p className="bg-stone-200/50 p-4 rounded border border-wood/10 italic text-base leading-relaxed break-words whitespace-pre-wrap">
-                            {bounty.description}
-                        </p>
+                        <p className="bg-stone-200/50 p-4 rounded border border-wood/10 italic text-base leading-relaxed">{bounty.description}</p>
                     </div>
                 </div>
             </div>
