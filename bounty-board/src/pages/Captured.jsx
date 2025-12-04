@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, Filter, ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -13,6 +13,10 @@ export default function Captured() {
   const [maxReward, setMaxReward] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +24,10 @@ export default function Captured() {
       .then(res => setBounties(res.data.filter(b => b.status === 'captured')))
       .catch(err => console.error(err));
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, minReward, maxReward, sortOrder]);
 
   const filteredBounties = bounties.filter(b => {
     const matchesSearch = b.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -35,6 +43,13 @@ export default function Captured() {
     const amountB = parseFloat(b.bounty_amount);
     return sortOrder === 'asc' ? amountA - amountB : amountB - amountA;
   });
+
+  const totalPages = Math.ceil(filteredBounties.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBounties = filteredBounties.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -94,8 +109,9 @@ export default function Captured() {
       </div>
 
       <div className="max-w-7xl mx-auto p-4 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredBounties.map(bounty => (
+        {/* Grid diatur maksimal 3 kolom agar layout tetap rapi (6 item = 2 baris penuh) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentBounties.map(bounty => (
             <BountyCard key={bounty.id} bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
           ))}
           
@@ -107,6 +123,30 @@ export default function Captured() {
             </div>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12 mb-8">
+            <button 
+              onClick={() => paginate(currentPage - 1)} 
+              disabled={currentPage === 1}
+              className="bg-paper text-wood p-2 rounded shadow border-2 border-wood hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            
+            <div className="bg-black/40 text-paper px-4 py-2 rounded border border-white/20 font-bold font-serif min-w-[100px] text-center backdrop-blur-sm">
+              Page {currentPage} / {totalPages}
+            </div>
+
+            <button 
+              onClick={() => paginate(currentPage + 1)} 
+              disabled={currentPage === totalPages}
+              className="bg-paper text-wood p-2 rounded shadow border-2 border-wood hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

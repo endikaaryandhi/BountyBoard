@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Search, CheckCircle, XCircle, Filter, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Filter, ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import BountyCard from '../components/BountyCard';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -16,11 +16,19 @@ export default function Home() {
   const [maxReward, setMaxReward] = useState('');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showFilters, setShowFilters] = useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
   const navigate = useNavigate();
   const { role } = useAuth();
 
   const bounties = allBounties.filter(b => b.status === 'wanted');
   const pendingBounties = allBounties.filter(b => b.status === 'pending');
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, view, minReward, maxReward, sortOrder]);
 
   const handleApprove = async (id, e) => {
     e.stopPropagation();
@@ -60,6 +68,13 @@ export default function Home() {
     const amountB = parseFloat(b.bounty_amount);
     return sortOrder === 'asc' ? amountA - amountB : amountB - amountA;
   });
+
+  const totalPages = Math.ceil(filteredBounties.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBounties = filteredBounties.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -141,8 +156,8 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto p-4 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredBounties.map(bounty => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentBounties.map(bounty => (
             <div key={bounty.id} className="relative group">
                <BountyCard bounty={bounty} onClick={() => navigate(`/detail/${bounty.id}`)} />
                
@@ -172,6 +187,30 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-12 mb-8">
+            <button 
+              onClick={() => paginate(currentPage - 1)} 
+              disabled={currentPage === 1}
+              className="bg-paper text-wood p-2 rounded shadow border-2 border-wood hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            
+            <div className="bg-black/40 text-paper px-4 py-2 rounded border border-white/20 font-bold font-serif min-w-[100px] text-center backdrop-blur-sm">
+              Page {currentPage} / {totalPages}
+            </div>
+
+            <button 
+              onClick={() => paginate(currentPage + 1)} 
+              disabled={currentPage === totalPages}
+              className="bg-paper text-wood p-2 rounded shadow border-2 border-wood hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
